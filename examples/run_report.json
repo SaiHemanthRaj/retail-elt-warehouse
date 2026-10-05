@@ -1,0 +1,59 @@
+{
+  "backend": "duckdb",
+  "batches": [
+    {
+      "source": "batch_01.csv",
+      "status": "loaded",
+      "rows": 1200,
+      "batch_hash": "f3626abd89b321fa6515afa3fa952ba8dc3849e8ed766d0fd4a4645b8204c28f"
+    },
+    {
+      "source": "batch_02.csv",
+      "status": "loaded",
+      "rows": 55,
+      "batch_hash": "19b188c9241737693a6a5fd5306c2dfd612ebe24a142bf0aab3ae633aacefbaf"
+    },
+    {
+      "source": "batch_02.csv",
+      "status": "replayed",
+      "rows": 0,
+      "batch_hash": "19b188c9241737693a6a5fd5306c2dfd612ebe24a142bf0aab3ae633aacefbaf"
+    }
+  ],
+  "fact_rows": 1220,
+  "revenue_cents": 7821134,
+  "quality": {
+    "missing_customer": 0,
+    "missing_product": 0,
+    "missing_store": 0,
+    "fact_count": 0,
+    "revenue_reconciliation": 0,
+    "duplicate_fact": 0
+  },
+  "regional_sales": [
+    {
+      "region": "North",
+      "orders": 410,
+      "revenue_cents": 2777227,
+      "rank": 1
+    },
+    {
+      "region": "East",
+      "orders": 400,
+      "revenue_cents": 2647861,
+      "rank": 2
+    },
+    {
+      "region": "South",
+      "orders": 400,
+      "revenue_cents": 2376056,
+      "rank": 3
+    },
+    {
+      "region": "West",
+      "orders": 10,
+      "revenue_cents": 19990,
+      "rank": 4
+    }
+  ]
+}
