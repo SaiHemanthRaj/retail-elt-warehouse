@@ -100,3 +100,16 @@ def test_dimension_change_failure_is_atomic(db, tmp_path):
         db.load(ROOT / "data/batch_02.csv", changes)
     assert db.rows("SELECT COUNT(*) FROM raw.customer_history")[0][0] == 60
     assert db.rows("SELECT COUNT(*) FROM raw.sales")[0][0] == 1200
+
+
+def test_duplicate_customer_history_is_rejected_without_enforced_primary_key(db, tmp_path):
+    # Snowflake standard tables expose PK metadata but do not enforce it.
+    db.execute("CREATE OR REPLACE TABLE raw.customer_history AS SELECT * FROM raw.customer_history")
+    db.load(ROOT / "data/batch_01.csv")
+    changes = tmp_path / "duplicate_customers.csv"
+    changes.write_text("customer_id,region,valid_from\nC001,West,2026-09-01\n")
+    with pytest.raises(ValueError, match="Duplicate customer history"):
+        db.load(ROOT / "data/batch_02.csv", changes)
+    assert db.rows("SELECT COUNT(*) FROM raw.customer_history")[0][0] == 60
+    assert db.rows("SELECT COUNT(*) FROM raw.sales")[0][0] == 1200
+    assert db.rows("SELECT COUNT(*) FROM raw.batches")[0][0] == 1

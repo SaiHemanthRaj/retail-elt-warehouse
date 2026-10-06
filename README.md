@@ -6,9 +6,7 @@ A small retail business needs consistent revenue reporting even when orders arri
 source systems correct quantities, and customers move between regions. This project models those cases
 instead of treating every CSV row as a new sale.
 
-**Verified locally:** 1,220 sales facts, 66 customer versions, zero failures across six quality checks.
-The SQL executes on DuckDB. A Snowflake connector path uses the same modeling SQL, but has not been
-executed against a Snowflake account. This is a synthetic portfolio project, not production experience.
+**Verified locally and in Snowflake:** 1,220 sales facts, 66 customer versions, and zero failures across six SQL quality checks. A caller-rights Snowpark Python procedure executes the same loading logic and modeling SQL in a dedicated cloud sandbox. Ten cloud assertions cover totals, replay, historical regions, conflicts, and rollback. This is synthetic portfolio work, separate from professional experience.
 
 ## Review in 60 seconds
 
@@ -19,7 +17,7 @@ executed against a Snowflake account. This is a synthetic portfolio project, not
 | How is history preserved? | Effective-dated SCD Type 2 customer dimension |
 | What happens on failure? | Raw rows, dimension changes, facts, and batch marker roll back together |
 | Can I reproduce it? | Three commands below; no account or credit card |
-| Where are results? | [Run report](examples/run_report.json), [test evidence](examples/verification.txt) |
+| Where are results? | [Local report](examples/run_report.json), [Snowflake report](examples/snowflake_run_report.json), [cloud verification](docs/cloud-verification.md) |
 
 ## Architecture
 
@@ -35,7 +33,7 @@ flowchart TD
  G --> I["Commit batch or roll back"]
 ```
 
-The diagrams describe the implemented local data flow. Cloud deployment is not implied.
+The diagram describes the shared loader executed locally on DuckDB and in a Snowflake sandbox through Snowpark. It does not represent a continuously scheduled or production deployment.
 
 ## Run
 
@@ -89,19 +87,16 @@ joins facts to customer versions, aggregates revenue by region, and ranks region
 ## Verified results and tests
 
 The fixtures contain 1,200 original lines, 30 corrections, 20 late orders, and five stale updates.
-The local result is 1,220 facts and **7,821,134 revenue cents**. Replaying the second batch changes nothing.
+Both the local and verified Snowflake result are 1,220 facts and **7,821,134 revenue cents**. Replaying the second batch changes nothing.
 Those figures describe this synthetic dataset only.
 
 Tests cover replay, stale versions, SCD Type 2 lookup, exact revenue reconciliation, invalid dates/amounts,
 missing dimension references, conflicting timestamps, and transaction rollback including dimension changes.
-The quality gate checks customer/product/store resolution, fact count, revenue, and duplicate facts.
+The six SQL checks cover customer/product/store resolution, fact count, revenue, and duplicate facts. An additional explicit guard rejects duplicate customer-history versions, because Snowflake standard tables do not enforce their primary keys. Existing order versions are fetched in groups of at most 500 order IDs rather than one query per input row.
 
 ## Snowflake path
 
-See [Snowflake execution](docs/snowflake.md) for the dedicated sandbox prerequisites and optional command.
-No Streams, Tasks, RBAC deployment, performance improvement, or Snowflake execution is claimed.
-The connector and SQL are included for a real account smoke test; DuckDB execution does not prove
-Snowflake dialect compatibility or cloud performance.
+See [Snowflake execution](docs/snowflake.md) for the reproducible Snowpark procedure, sandbox setup, and execution commands. [Captured cloud evidence](docs/cloud-verification.md) records the actual result and boundaries. Snowpark 1.55.0 and Python 3.12 were used. The separate password-based connector CLI remains unverified. Streams, Tasks, production RBAC deployment, and performance improvements are not claimed.
 
 ## Decisions and limits
 
@@ -114,7 +109,7 @@ Snowflake dialect compatibility or cloud performance.
   the project does not implement general Type 1 attribute updates.
 * In-memory CSV parsing is suitable for the fixtures. Large files require chunking, COPY/staging, and load budgets.
 
-Next improvements: execute the Snowflake smoke test, capture query profiles, implement delete/return events,
+Next improvements: verify the external connector CLI, capture query profiles, implement delete/return events,
 then add affected-key processing and a checkpointed CDC integration. Add Streams/Tasks only with cloud
 execution evidence and transactional offset tests.
 

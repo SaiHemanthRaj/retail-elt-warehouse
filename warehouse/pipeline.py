@@ -130,18 +130,29 @@ class Warehouse:
                     "batch_hash": batch_hash,
                 }
             # Conflicting updates at identical timestamps are ambiguous; refuse them.
-            for r in rows:
+            incoming = {(r[0], r[7]): r for r in rows}
+            order_ids = sorted({r[0] for r in rows})
+            for offset in range(0, len(order_ids), 500):
+                ids = order_ids[offset : offset + 500]
                 old = self.rows(
-                    "SELECT order_date,customer_id,product_id,store_id,quantity,unit_price_cents FROM raw.sales WHERE order_id="
-                    + self.placeholder
-                    + " AND updated_at="
-                    + self.placeholder,
-                    (r[0], r[7]),
+                    "SELECT order_id,updated_at,order_date,customer_id,product_id,store_id,quantity,unit_price_cents "
+                    "FROM raw.sales WHERE order_id IN ("
+                    + ",".join([self.placeholder] * len(ids))
+                    + ")",
+                    ids,
                 )
-                if old and any(tuple(map(str, o)) != tuple(map(str, r[1:7])) for o in old):
-                    raise ValueError("Conflicting order version: " + r[0])
+                for o in old:
+                    r = incoming.get((o[0], o[1]))
+                    if r and tuple(map(str, o[2:])) != tuple(map(str, r[1:7])):
+                        raise ValueError("Conflicting order version: " + r[0])
             self.insert("raw.sales", [r + (batch_hash,) for r in rows], 9)
             self.insert("raw.customer_history", changes, 3)
+            # Standard Snowflake tables do not enforce primary-key constraints.
+            if self.rows(
+                "SELECT COUNT(*) FROM (SELECT customer_id,valid_from FROM raw.customer_history "
+                "GROUP BY customer_id,valid_from HAVING COUNT(*)>1) d"
+            )[0][0]:
+                raise ValueError("Duplicate customer history version")
             self.run_sql("003_merge.sql")
             quality = self.rows((ROOT / "sql/004_quality.sql").read_text())
             failures = {name: int(n) for name, n in quality if n}

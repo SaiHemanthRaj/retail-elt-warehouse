@@ -1,0 +1,12 @@
+CHECK_NAME,ACTUAL_VALUE,EXPECTED_VALUE,PASSED
+committed_batches,2,2,TRUE
+customer_versions,66,66,TRUE
+duplicate_fact,0,0,TRUE
+fact_count,0,0,TRUE
+fact_rows,1220,1220,TRUE
+missing_customer,0,0,TRUE
+missing_product,0,0,TRUE
+missing_store,0,0,TRUE
+raw_sales_rows,1255,1255,TRUE
+revenue_cents,7821134,7821134,TRUE
+revenue_reconciliation,0,0,TRUE

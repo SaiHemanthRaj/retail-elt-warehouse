@@ -1,0 +1,69 @@
+{
+  "assertions": {
+    "all_quality_checks_zero": true,
+    "conflict_rejected": true,
+    "corrected_order_quantity": true,
+    "customer_versions": true,
+    "duplicate_history_rolled_back": true,
+    "expected_totals": true,
+    "historical_region_L00001": true,
+    "historical_region_L00002": true,
+    "quality_failure_rolled_back": true,
+    "replay_unchanged": true
+  },
+  "backend": "snowflake-snowpark",
+  "batches": [
+    {
+      "batch_hash": "f3626abd89b321fa6515afa3fa952ba8dc3849e8ed766d0fd4a4645b8204c28f",
+      "rows": 1200,
+      "source": "batch_01.csv",
+      "status": "loaded"
+    },
+    {
+      "batch_hash": "19b188c9241737693a6a5fd5306c2dfd612ebe24a142bf0aab3ae633aacefbaf",
+      "rows": 55,
+      "source": "batch_02.csv",
+      "status": "loaded"
+    },
+    {
+      "batch_hash": "19b188c9241737693a6a5fd5306c2dfd612ebe24a142bf0aab3ae633aacefbaf",
+      "rows": 0,
+      "source": "batch_02.csv",
+      "status": "replayed"
+    }
+  ],
+  "committed_batches": 2,
+  "customer_versions": 66,
+  "fact_rows": 1220,
+  "observed_call_duration_seconds": 36,
+  "python_version": "3.12.13",
+  "quality": {
+    "duplicate_fact": 0,
+    "fact_count": 0,
+    "missing_customer": 0,
+    "missing_product": 0,
+    "missing_store": 0,
+    "revenue_reconciliation": 0
+  },
+  "query_id": "01c78ac7-0308-cd64-0011-5b660008e0c2",
+  "raw_sales_rows": 1255,
+  "revenue_cents": 7821134,
+  "snowpark_version": "1.55.0",
+  "source_hashes": {
+    "data/batch_01.csv": "56ee6423dbd2ec5fd335a93e6d029c407a2e6b6ecfe8eb2af9d9eceb5a020e3a",
+    "data/batch_02.csv": "b59cc50ed7ac2f729ff3a89fc44ca74a9b19845de78f62b4cebe1ba7bb8d9380",
+    "data/customer_changes.csv": "7baa199acbe9a37086163a5d64897cd814d96d6a4fec49e382ed3e0bbc9561c8",
+    "data/customers.csv": "f70c2863251865b7a4d9423fce9cb977fcdfc213681aa3e35cffed497b579798",
+    "data/products.csv": "f7e6e9366c731b63e56bc4cbd69ae2ba94c4f542502fca8559a04ee91be5ff5a",
+    "data/stores.csv": "3b6eb77a94d46d6bffd9746186f932b7cb6aaddebe1e7934ea09da7f610d556a",
+    "sql/001_schema.sql": "07d27beab8dbfc8aa4b4a5afef01c81e3855de724a2d442e45a59f55a00d14ea",
+    "sql/002_models.sql": "397b6d0c35f4f8fc95bcca2867dd16c2bc104a17f1239d697951f55471fba2e2",
+    "sql/003_merge.sql": "9d3d2807caf8dc1aaa3ac13a10b817b7792c159906788abb56c621c25ac1fb2c",
+    "sql/004_quality.sql": "be1895a4d0c9895c896da8be14837c62b1b4f11f0a3eae7d4104cd94c6ab09f8",
+    "sql/005_analytics.sql": "b1337b089e4f189d1835afc2da48c3a4f21c8c2bea96930d8a5566c3f2141165",
+    "warehouse/__init__.py": "edbd6aa50c7a81ce4eaf84569c8a5c80d0fae8393e733628a87739917bd2472d",
+    "warehouse/pipeline.py": "1fa5ffca89ae87c1b0ea4bb13d3b29e0514e7c9a7f2541fcaf1d4272449e3548",
+    "warehouse/snowpark.py": "b596758a61fe512cb6cd53a8aba1763d17c3ec92046d50e58f7c46d2a1dfb6b5"
+  },
+  "verified_at_utc": "2026-10-06T05:28:13.477589+00:00"
+}
